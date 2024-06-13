@@ -97,7 +97,7 @@ RSpec.describe Dependabot::DependencyFile do
 
       it "has the correct operation properties" do
         expect(file.deleted).to be_falsey
-        expect(file.deleted?).to be_falsey
+        expect(file).not_to be_deleted
         expect(file.operation).to eq Dependabot::DependencyFile::Operation::UPDATE
       end
     end
@@ -129,7 +129,7 @@ RSpec.describe Dependabot::DependencyFile do
 
       it "has the correct operation properties" do
         expect(file.deleted).to be_falsey
-        expect(file.deleted?).to be_falsey
+        expect(file).not_to be_deleted
         expect(file.operation).to eq Dependabot::DependencyFile::Operation::UPDATE
       end
     end
@@ -159,7 +159,7 @@ RSpec.describe Dependabot::DependencyFile do
 
       it "has the correct operation properties" do
         expect(file.deleted).to be_falsey
-        expect(file.deleted?).to be_falsey
+        expect(file).not_to be_deleted
         expect(file.operation).to eq Dependabot::DependencyFile::Operation::CREATE
       end
     end
@@ -189,7 +189,7 @@ RSpec.describe Dependabot::DependencyFile do
 
       it "has the correct operation properties" do
         expect(file.deleted).to be_falsey
-        expect(file.deleted?).to be_falsey
+        expect(file).not_to be_deleted
         expect(file.operation).to eq Dependabot::DependencyFile::Operation::UPDATE
       end
     end
@@ -219,7 +219,7 @@ RSpec.describe Dependabot::DependencyFile do
 
       it "has the correct operation properties" do
         expect(file.deleted).to be_truthy
-        expect(file.deleted?).to be_truthy
+        expect(file).to be_deleted
         expect(file.operation).to eq Dependabot::DependencyFile::Operation::DELETE
       end
     end
@@ -249,7 +249,7 @@ RSpec.describe Dependabot::DependencyFile do
 
       it "has the correct operation properties" do
         expect(file.deleted).to be_truthy
-        expect(file.deleted?).to be_truthy
+        expect(file).to be_deleted
         expect(file.operation).to eq Dependabot::DependencyFile::Operation::DELETE
       end
     end
@@ -280,7 +280,7 @@ RSpec.describe Dependabot::DependencyFile do
 
       it "has the correct operation properties" do
         expect(file.deleted).to be_truthy
-        expect(file.deleted?).to be_truthy
+        expect(file).to be_deleted
         expect(file.operation).to eq Dependabot::DependencyFile::Operation::DELETE
       end
     end
@@ -316,7 +316,7 @@ RSpec.describe Dependabot::DependencyFile do
       let(:file1) { described_class.new(name: "Gemfile", content: "a") }
       let(:file2) { described_class.new(name: "Gemfile", content: "b") }
 
-      specify { expect(file1).to_not eq(file2) }
+      specify { expect(file1).not_to eq(file2) }
     end
   end
 

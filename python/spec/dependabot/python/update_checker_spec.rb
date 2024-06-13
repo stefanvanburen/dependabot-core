@@ -162,10 +162,10 @@ RSpec.describe Dependabot::Python::UpdateChecker do
   end
 
   describe "#lowest_security_fix_version" do
-    subject { checker.lowest_security_fix_version }
+    subject(:lowest_fix_version) { checker.lowest_security_fix_version }
 
     it "finds the lowest available non-vulnerable version" do
-      is_expected.to eq(Gem::Version.new("2.0.1"))
+      expect(lowest_fix_version).to eq(Gem::Version.new("2.0.1"))
     end
 
     context "with a security vulnerability" do
@@ -761,19 +761,17 @@ RSpec.describe Dependabot::Python::UpdateChecker do
       end
 
       it "updates both requirements" do
-        expect(checker.updated_requirements).to match_array(
-          [{
-            file: "constraints.txt",
-            requirement: "==2.6.0",
-            groups: [],
-            source: nil
-          }, {
-            file: "requirements.txt",
-            requirement: "==2.6.0",
-            groups: [],
-            source: nil
-          }]
-        )
+        expect(checker.updated_requirements).to contain_exactly({
+          file: "constraints.txt",
+          requirement: "==2.6.0",
+          groups: [],
+          source: nil
+        }, {
+          file: "requirements.txt",
+          requirement: "==2.6.0",
+          groups: [],
+          source: nil
+        })
       end
     end
   end

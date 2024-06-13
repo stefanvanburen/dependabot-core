@@ -80,13 +80,13 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
       let(:files) { project_dependency_files("npm6_and_yarn/simple") }
 
       it "updates the files" do
-        expect { updated_files }.to_not(change { Dir.entries(tmp_path) })
+        expect { updated_files }.not_to(change { Dir.entries(tmp_path) })
         updated_files.each { |f| expect(f).to be_a(Dependabot::DependencyFile) }
         expect(updated_files.count).to eq(3)
       end
 
       it "native helpers don't output to stdout" do
-        expect { updated_files }.to_not output.to_stdout
+        expect { updated_files }.not_to output.to_stdout
       end
     end
 
@@ -339,7 +339,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
             "is-number@jonschlinkert/is-number:"
           )
 
-          expect(updated_yarn_lock.content).to_not include("d5ac0584ee")
+          expect(updated_yarn_lock.content).not_to include("d5ac0584ee")
           expect(updated_yarn_lock.content).to include(
             "https://codeload.github.com/jonschlinkert/is-number/tar.gz/0c6b15a88bc10cd47f67a09506399dfc9ddc075d"
           )
@@ -359,7 +359,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
             expect(updated_yarn_lock.content).to include("is-number")
             expect(updated_yarn_lock.content).to include("0c6b15a88b")
-            expect(updated_yarn_lock.content).to_not include("af885e2e890")
+            expect(updated_yarn_lock.content).not_to include("af885e2e890")
           end
 
           context "when the lockfile has an outdated source" do
@@ -383,7 +383,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
               expect(updated_yarn_lock.content).to include(
                 "is-number@https://github.com/jonschlinkert/is-number.git"
               )
-              expect(updated_yarn_lock.content).to_not include("af885e2e890")
+              expect(updated_yarn_lock.content).not_to include("af885e2e890")
             end
           end
 
@@ -439,7 +439,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
               expect(updated_yarn_lock.content)
                 .to include('slick-carousel@git://github.com/brianfryer/slick":')
               expect(updated_yarn_lock.content).to include("a2aa3fec")
-              expect(updated_yarn_lock.content).to_not include("280b56016")
+              expect(updated_yarn_lock.content).not_to include("280b56016")
             end
           end
 
@@ -459,7 +459,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
               expect(updated_yarn_lock.content).to include("is-number")
               expect(updated_yarn_lock.content).to include("0c6b15a88bc")
-              expect(updated_yarn_lock.content).to_not include("af885e2e890")
+              expect(updated_yarn_lock.content).not_to include("af885e2e890")
               expect(updated_yarn_lock.content)
                 .to include("is-number@git+ssh://git@github.com:jonschlinkert")
             end
@@ -534,7 +534,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
                 .to include("is-number@https://dummy-token@github.com/" \
                             "jonschlinkert/is-number.git#master")
               expect(updated_yarn_lock.content).to include("0c6b15a88b")
-              expect(updated_yarn_lock.content).to_not include("af885e2e890")
+              expect(updated_yarn_lock.content).not_to include("af885e2e890")
             end
           end
         end
@@ -607,6 +607,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
       context "with a requirement" do
         let(:req) { "^4.0.0" }
+        let(:git_pack_fixture_name) { "is-number" }
         let(:ref) { "master" }
         let(:old_req) { "^2.0.0" }
         let(:old_ref) { "master" }
@@ -628,8 +629,6 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
               headers: git_header
             )
         end
-
-        let(:git_pack_fixture_name) { "is-number" }
 
         it "updates the package.json and the lockfiles" do
           expect(updated_files.map(&:name))
@@ -1001,14 +1000,8 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
       it "updates both lockfiles" do
         expect(updated_files.map(&:name))
-          .to match_array(
-            [
-              "packages/package1/yarn.lock",
-              "packages/package1/package-lock.json",
-              "packages/other_package/yarn.lock",
-              "packages/other_package/package-lock.json"
-            ]
-          )
+          .to contain_exactly("packages/package1/yarn.lock", "packages/package1/package-lock.json",
+                              "packages/other_package/yarn.lock", "packages/other_package/package-lock.json")
 
         package1_yarn_lock =
           updated_files.find { |f| f.name == "packages/package1/yarn.lock" }
@@ -1047,12 +1040,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
       it "updates only relevant lockfiles" do
         expect(updated_files.map(&:name))
-          .to match_array(
-            [
-              "packages/package1/package-lock.json",
-              "packages/package3/yarn.lock"
-            ]
-          )
+          .to contain_exactly("packages/package1/package-lock.json", "packages/package3/yarn.lock")
 
         package1_npm_lock =
           updated_files
@@ -1077,12 +1065,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
         it "updates only relevant lockfiles" do
           expect(updated_files.map(&:name))
-            .to match_array(
-              [
-                "packages/package1/package-lock.json",
-                "packages/package3/yarn.lock"
-              ]
-            )
+            .to contain_exactly("packages/package1/package-lock.json", "packages/package3/yarn.lock")
 
           package1_npm_lock =
             updated_files
@@ -1106,13 +1089,8 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
         it "updates out of range to latest resolvable version" do
           expect(updated_files.map(&:name))
-            .to match_array(
-              [
-                "packages/package1/package-lock.json",
-                "packages/package3/yarn.lock",
-                "packages/package4/package-lock.json"
-              ]
-            )
+            .to contain_exactly("packages/package1/package-lock.json", "packages/package3/yarn.lock",
+                                "packages/package4/package-lock.json")
 
           package1_npm_lock =
             updated_files
@@ -2449,6 +2427,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
         context "with a requirement" do
           let(:req) { "^4.0.0" }
+          let(:git_pack_fixture_name) { "is-number" }
           let(:ref) { "master" }
           let(:old_req) { "^2.0.0" }
           let(:old_ref) { "master" }
@@ -2470,8 +2449,6 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
                 headers: git_header
               )
           end
-
-          let(:git_pack_fixture_name) { "is-number" }
 
           it "updates the package.json and the lockfiles" do
             expect(updated_files.map(&:name))
@@ -2754,12 +2731,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
         it "updates both lockfiles" do
           expect(updated_files.map(&:name))
-            .to match_array(
-              [
-                "packages/package1/package-lock.json",
-                "packages/other_package/package-lock.json"
-              ]
-            )
+            .to contain_exactly("packages/package1/package-lock.json", "packages/other_package/package-lock.json")
 
           package1_npm_lock =
             updated_files
@@ -2794,11 +2766,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
         it "updates only relevant lockfiles" do
           expect(updated_files.map(&:name))
-            .to match_array(
-              [
-                "packages/package1/package-lock.json"
-              ]
-            )
+            .to contain_exactly("packages/package1/package-lock.json")
 
           package1_npm_lock =
             updated_files
@@ -2818,11 +2786,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
           it "updates only relevant lockfiles" do
             expect(updated_files.map(&:name))
-              .to match_array(
-                [
-                  "packages/package1/package-lock.json"
-                ]
-              )
+              .to contain_exactly("packages/package1/package-lock.json")
 
             package1_npm_lock =
               updated_files
@@ -2841,12 +2805,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
           it "updates out of range to latest resolvable version" do
             expect(updated_files.map(&:name))
-              .to match_array(
-                [
-                  "packages/package1/package-lock.json",
-                  "packages/package4/package-lock.json"
-                ]
-              )
+              .to contain_exactly("packages/package1/package-lock.json", "packages/package4/package-lock.json")
 
             package1_npm_lock =
               updated_files
@@ -2977,16 +2936,15 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
         end
 
         it "updates the .yarn/cache folder" do
-          expect(updated_files.map(&:name)).to match_array(
-            [
+          expect(updated_files.map(&:name))
+            .to contain_exactly(
               ".pnp.cjs",
               ".yarn/cache/fetch-factory-npm-0.0.1-e67abc1f87-ff7fe6fdb8.zip",
               ".yarn/cache/fetch-factory-npm-0.0.2-816f8766e1-200ddd8ae3.zip",
               ".yarn/install-state.gz",
               "package.json",
               "yarn.lock"
-            ]
-          )
+            )
           expect(updated_files.find { |updated_file| updated_file.name == ".pnp.cjs" }.mode).to eq("100755")
         end
       end
@@ -3005,13 +2963,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
         end
 
         it "does not update zero-install files" do
-          expect(updated_files.map(&:name)).to match_array(
-            [
-              "package.json",
-              "yarn.lock",
-              ".yarn/install-state.gz"
-            ]
-          )
+          expect(updated_files.map(&:name)).to contain_exactly("package.json", "yarn.lock", ".yarn/install-state.gz")
         end
       end
 
@@ -3029,13 +2981,11 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
         end
 
         it "updates the cache but not the zero install file" do
-          expect(updated_files.map(&:name)).to match_array(
-            [
-              ".yarn/cache/fetch-factory-npm-0.0.1-e67abc1f87-ff7fe6fdb8.zip",
-              ".yarn/cache/fetch-factory-npm-0.0.2-816f8766e1-200ddd8ae3.zip",
-              "package.json",
-              "yarn.lock"
-            ]
+          expect(updated_files.map(&:name)).to contain_exactly(
+            ".yarn/cache/fetch-factory-npm-0.0.1-e67abc1f87-ff7fe6fdb8.zip",
+            ".yarn/cache/fetch-factory-npm-0.0.2-816f8766e1-200ddd8ae3.zip",
+            "package.json",
+            "yarn.lock"
           )
         end
       end
@@ -3120,8 +3070,8 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
           end
 
           expect(lockfile.content).to include(%("lodash@npm:1.3.1, lodash@npm:^1.3.1":))
-          expect(lockfile.content).to_not include("lodash@npm:^1.2.1:")
-          expect(lockfile.content).to_not include("workspace-aggregator")
+          expect(lockfile.content).not_to include("lodash@npm:^1.2.1:")
+          expect(lockfile.content).not_to include("workspace-aggregator")
 
           expect(package.content).to include('"lodash": "1.3.1"')
           expect(package.content).to include("\"./packages/*\",\n")
@@ -3156,7 +3106,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
             lockfile = updated_files.find { |f| f.name == "yarn.lock" }
             expect(lockfile.content).to include("chalk@npm:0.4.0")
-            expect(lockfile.content).to_not include("workspace-aggregator")
+            expect(lockfile.content).not_to include("workspace-aggregator")
           end
 
           it "does not add the dependency to the top-level workspace" do
@@ -3292,9 +3242,9 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
         it "removes details of the old version" do
           expect(updated_yarn_lock.content)
-            .to_not include("babel-register@^6.24.1:")
+            .not_to include("babel-register@^6.24.1:")
           expect(updated_yarn_lock.content)
-            .to_not include("integrity sha512-")
+            .not_to include("integrity sha512-")
         end
       end
 
@@ -3358,7 +3308,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
           expect(updated_yarn_lock.content).to include("rimraf@2.6.3")
 
           # Cleaned up in fix-duplicates.js
-          expect(updated_yarn_lock.content).to_not include("rimraf-2.6.2")
+          expect(updated_yarn_lock.content).not_to include("rimraf-2.6.2")
         end
       end
 
@@ -3457,8 +3407,8 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
           end
 
           expect(lockfile.content).to include("lodash@1.3.1, lodash@^1.3.1:")
-          expect(lockfile.content).to_not include("lodash@^1.2.1:")
-          expect(lockfile.content).to_not include("workspace-aggregator")
+          expect(lockfile.content).not_to include("lodash@^1.2.1:")
+          expect(lockfile.content).not_to include("workspace-aggregator")
 
           expect(package.content).to include('"lodash": "1.3.1"')
           expect(package.content).to include("\"./packages/*\",\n")
@@ -3493,7 +3443,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
 
             lockfile = updated_files.find { |f| f.name == "yarn.lock" }
             expect(lockfile.content).to include("chalk@0.4.0:")
-            expect(lockfile.content).to_not include("workspace-aggregator")
+            expect(lockfile.content).not_to include("workspace-aggregator")
           end
         end
 
@@ -3671,7 +3621,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
         let(:previous_requirements) { nil }
 
         it "de-duplicates all entries to the same version" do
-          expect(updated_files.map(&:name)).to match_array(["yarn.lock"])
+          expect(updated_files.map(&:name)).to contain_exactly("yarn.lock")
           expect(updated_yarn_lock.content)
             .to include("js-yaml@^3.10.0, js-yaml@^3.4.6, js-yaml@^3.9.0:\n" \
                         '  version "3.14.1"')
@@ -3998,7 +3948,7 @@ RSpec.describe Dependabot::NpmAndYarn::FileUpdater do
         let(:previous_requirements) { nil }
 
         it "de-duplicates all entries to the same version" do
-          expect(updated_files.map(&:name)).to match_array(["pnpm-lock.yaml"])
+          expect(updated_files.map(&:name)).to contain_exactly("pnpm-lock.yaml")
 
           expect(updated_pnpm_lock.content).to include("/js-yaml@3.14.1:")
           expect(updated_pnpm_lock.content).to include("/js-yaml@").once
