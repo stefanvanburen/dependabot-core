@@ -112,9 +112,8 @@ module Dependabot
       @handled_dependencies[@current_directory] = set
     end
 
-    sig { params(dependencies_hash: T::Hash[T.nilable(String), T::Array[Dependabot::Dependency]]).void }
+    sig { params(dependencies_hash: T::Array[T::Hash[Symbol, String]]).void }
     def add_handled_group_dependencies(dependencies_hash)
-      return unless dependencies_hash.is_a?(Hash)
       raise "Current directory not set" if @current_directory == ""
 
       dependencies_hash.each do |dir, dependency_names|
