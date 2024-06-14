@@ -71,7 +71,7 @@ RSpec.describe Dependabot::Nuget::UpdateChecker::DependencyFinder do
       content.sysread
     end
 
-    before(:context) do
+    before do
       disallowed_urls = %w(
         https://api.nuget.org/v3/index.json
         https://api.nuget.org/v3-flatcontainer/microsoft.extensions.dependencymodel/42.42.42/microsoft.extensions.dependencymodel.nuspec

@@ -8,7 +8,11 @@ require "dependabot/pub/helpers"
 require "webrick"
 
 RSpec.describe "Helpers" do
-  before(:all) do
+  after do
+    @server.shutdown
+  end
+
+  before do
     # Because we do the networking in infer_sdk_versions we have to run an
     # actual web server.
     dev_null = WEBrick::Log.new("/dev/null", 7)
@@ -16,13 +20,6 @@ RSpec.describe "Helpers" do
     Thread.new do
       @server.start
     end
-  end
-
-  after(:all) do
-    @server.shutdown
-  end
-
-  before do
     @server.mount_proc "/flutter_releases.json" do |_req, res|
       res.body = File.read(File.join(__dir__, "..", "..", "fixtures", "flutter_releases.json"))
     end
