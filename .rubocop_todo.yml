@@ -22,14 +22,6 @@ RSpec/AnyInstance:
     - 'updater/spec/dependabot/dependency_change_builder_spec.rb'
     - 'updater/spec/dependabot/file_fetcher_command_spec.rb'
 
-# Offense count: 7
-RSpec/BeforeAfterAll:
-  Exclude:
-    - 'nuget/spec/dependabot/nuget/update_checker/dependency_finder_spec.rb'
-    - 'pub/spec/dependabot/pub/file_updater_spec.rb'
-    - 'pub/spec/dependabot/pub/infer_sdk_versions_spec.rb'
-    - 'pub/spec/dependabot/pub/update_checker_spec.rb'
-
 # Offense count: 1286
 # Configuration parameters: CountAsOne.
 RSpec/ExampleLength:
@@ -50,6 +42,12 @@ RSpec/FilePath:
     - 'nuget/spec/dependabot/nuget/update_checker/nuspec_fetcher_spec.rb'
     - 'nuget/spec/dependabot/nuget/update_checker/repository_finder_spec.rb'
     - 'nuget/spec/dependabot/nuget/update_checker/tfm_finder_spec.rb'
+
+# Offense count: 56
+# This cop supports safe autocorrection (--autocorrect).
+RSpec/HooksBeforeExamples:
+  Enabled: false
+
 
 # Offense count: 70
 # Configuration parameters: Max, AllowedIdentifiers, AllowedPatterns.
@@ -169,6 +167,25 @@ RSpec/RepeatedExampleGroupBody:
 # Offense count: 45
 RSpec/RepeatedExampleGroupDescription:
   Enabled: false
+
+# Offense count: 36
+# This cop supports safe autocorrection (--autocorrect).
+RSpec/ScatteredSetup:
+  Exclude:
+    - 'bundler/spec/dependabot/bundler/file_fetcher_spec.rb'
+    - 'cargo/spec/dependabot/cargo/file_fetcher_spec.rb'
+    - 'common/spec/dependabot/clients/bitbucket_spec.rb'
+    - 'common/spec/dependabot/git_commit_checker_spec.rb'
+    - 'common/spec/dependabot/metadata_finders/base/commits_finder_spec.rb'
+    - 'composer/spec/dependabot/composer/update_checker_spec.rb'
+    - 'docker/spec/dependabot/docker/file_parser_spec.rb'
+    - 'elm/spec/dependabot/elm/file_fetcher_spec.rb'
+    - 'go_modules/spec/dependabot/go_modules/file_fetcher_spec.rb'
+    - 'gradle/spec/dependabot/gradle/update_checker/multi_dependency_updater_spec.rb'
+    - 'hex/spec/dependabot/hex/file_fetcher_spec.rb'
+    - 'npm_and_yarn/spec/dependabot/npm_and_yarn/metadata_finder_spec.rb'
+    - 'nuget/spec/dependabot/nuget/file_fetcher_spec.rb'
+    - 'python/spec/dependabot/python/file_fetcher_spec.rb'
 
 # Offense count: 10
 # Configuration parameters: Include, CustomTransform, IgnoreMethods, IgnoreMetadata.
